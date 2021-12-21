@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="postNotification" doc:id="8bc580ca-8ba5-4e7d-a3c7-2be54bd71267" >
+		<db:insert doc:name="Insert" doc:id="c019331f-a45e-4159-a446-1234452574f8" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO notification (user_id, timestamp, message) VALUES (:user_id, :timestamp, :message)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	"user_id":payload.user_id,
+	"timestamp": now() as DateTime { class : "java.sql.Date"},
+	"message": payload.message
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="892b92b7-33fd-4ced-9ea6-b7fb1f6ba993">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"notification has been created"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getNotificationByUserId" doc:id="1930d23d-c9e9-4f1e-b2c0-08b0971019ee" >
+		<choice doc:name="Choice" doc:id="13c91105-1a92-4f34-b39c-c39097a008f8" >
+			<when expression='#[attributes.queryParams.orderByTimestampDesc != null and attributes.queryParams.orderByTimestampDesc == "true"]'>
+				<db:select doc:name="Select" doc:id="f087f464-131e-4446-a64e-ba072f6a3d1c" config-ref="Database_Config">
+					<db:sql><![CDATA[SELECT * FROM notification where user_id=:user_id order by timestamp desc]]></db:sql>
+					<db:input-parameters><![CDATA[#[{
+	"user_id":attributes.uriParams.user_id
+}]]]></db:input-parameters>
+				</db:select>
+			</when>
+			<otherwise >
+				<db:select doc:name="Select" doc:id="26801ef3-5d63-41a9-9862-9f95115196b5" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM notification where user_id=:user_id]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"user_id":attributes.uriParams.user_id
+}]]]></db:input-parameters>
+		</db:select>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="bc10b4f3-30fd-4ecc-8f9e-35204b19e527" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
