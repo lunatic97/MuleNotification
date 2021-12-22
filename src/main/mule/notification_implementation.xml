@@ -13,7 +13,7 @@ output application/java
 ---
 {
 	"user_id":payload.user_id,
-	"timestamp": now() as DateTime { class : "java.sql.Date"},
+	"timestamp": now() as DateTime { class : "java.sql.Timestamp"},
 	"message": payload.message
 }]]]></db:input-parameters>
 		</db:insert>
