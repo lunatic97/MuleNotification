@@ -2,11 +2,11 @@ http:
   port: "8081"
 
 mysql:
-  host: "sql6.freemysqlhosting.net"
+  host: "db4free.net"
   port: "3306"
-  user: "sql6459387"
-  pass: "aeVVARB5nA"
-  database: "sql6459387"
+  user: "main_432"
+  pass: "root_main23"
+  database: "assignment_main"
   
 api:
   id: "17526776"
