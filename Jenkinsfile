@@ -42,6 +42,6 @@ pipeline {
   }
 
   tools {
-    maven 'apache-maven-3.8.4'
+    maven 'M3'
   }
 }
