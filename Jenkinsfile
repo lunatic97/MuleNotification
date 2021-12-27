@@ -3,7 +3,7 @@ pipeline {
   agent any
   environment {
     //adding a comment for the commit test
-    DEPLOY_CREDS = credentials('deploy-anypoint-user')
+    DEPLOY_CREDS = credentials('deploy-anypoint-SM')
     MULE_VERSION = '4.3.0'
     BG = "Apisero"
     WORKER = "Micro"
@@ -42,6 +42,6 @@ pipeline {
   }
 
   tools {
-    maven 'M3'
+    maven 'apache-maven-3.8.4'
   }
 }
